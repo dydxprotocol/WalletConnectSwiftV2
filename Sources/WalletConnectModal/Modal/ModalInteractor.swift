@@ -31,7 +31,16 @@ final class DefaultModalSheetInteractor: ModalSheetInteractor {
             )
         )
     
-        return (response.count, response.data.compactMap { $0 })
+        return (
+            response.count,
+            response.data.compactMap { $0 }
+                .filter { wallet in
+                    // only show recommended
+                    let recommended = WalletConnectModal.config.recommendedWalletIds
+                    if recommended.isEmpty { return true }
+                    return recommended.contains(wallet.id)
+                }
+        )
     }
     
     func createPairingAndConnect() async throws -> WalletConnectURI {
